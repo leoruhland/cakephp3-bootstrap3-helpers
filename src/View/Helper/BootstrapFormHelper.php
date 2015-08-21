@@ -20,17 +20,19 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0
 */
 
-namespace Bootstrap3\View\Helper;
+namespace Bootstrap\View\Helper;
 
 use Cake\View\Helper\FormHelper;
 
 class BootstrapFormHelper extends FormHelper {
 
+    use BootstrapTrait ;
+
     public $helpers = [
         'Html', 
         'Url',
         'bHtml' => [
-            'className' => 'Bootstrap3.BootstrapHtml'
+            'className' => 'Bootstrap.BootstrapHtml'
         ]
     ] ;
 
@@ -147,60 +149,29 @@ class BootstrapFormHelper extends FormHelper {
             $this->_customFileInput = $config['useCustomFileInput'];
         }
         $this->colSize = $this->_defaultColumnSize ;
-        $this->_defaultConfig['templateClass'] = 'Bootstrap3\View\BootstrapStringTemplate' ;
+        $this->_defaultConfig['templateClass'] = 'Bootstrap\View\BootstrapStringTemplate' ;
         parent::__construct($view, $config);
     }
     
     /**
-     * Adds the given class to the element options
      *
-     * @param array $options Array options/attributes to add a class to
-     * @param string|array $class The class name being added.
-     * @param string $key the key to use for class.
-     * @return array Array of options with $key set.
-     */
-    public function addClass(array $options = [], $class = null, $key = 'class') {
-        if (is_array($class)) {
-            $class = implode(' ', array_unique(array_map('trim', $class))) ;
-        }
-        if (isset($options[$key])) {
-            $optClass = $options[$key];
-            if (is_array($optClass)) {
-                $optClass = trim(implode(' ', array_unique(array_map('trim', $optClass))));
-            }
-        }
-        if (isset($optClass) && $optClass) {
-            $options[$key] = $optClass.' '.$class ;
-        }
-        else {
-            $options[$key] = $class ;
-        }
-        return $options ;
-    }
-    
-    /**
-     * 
-     * Add classes to options according to values of bootstrap-type and bootstrap-size for button.
-     * 
-     * @param $options The initial options with bootstrap-type and/or bootstrat-size values
-     * 
-     * @return The new options with class values (btn, and btn-* according to initial options)
-     * 
-     */
-    protected function _addButtonClasses ($options) {
-        $type = $this->_extractOption('bootstrap-type', $options, $this->_defaultButtonType);
-        $size = $this->_extractOption('bootstrap-size', $options, FALSE);
-        unset($options['bootstrap-size']) ;
-        unset($options['bootstrap-type']) ;
-        $options = $this->addClass($options, 'btn') ;
-        if (in_array($type, $this->buttonTypes)) {
-            $options = $this->addClass($options, 'btn-'.$type) ;
-        }
-        if (in_array($size, $this->buttonSizes)) {
-            $options = $this->addClass($options, 'btn-'.$size) ;
-        }
-        return $options ;
-    }
+     * Replace the templates with the ones specified by newTemplates, call the specified function
+     * with the specified parameters, and then restore the old templates.
+     *
+     * @params $templates The new templates
+     * @params $callback  The function to call
+     * @params $params    The arguments for the $callback function
+     *
+     * @return The return value of $callback
+     *
+    **/
+    protected function _wrapTemplates ($templates, $callback, $params) {
+        $oldTemplates = array_map ([$this, 'templates'], array_combine(array_keys($templates), array_keys($templates))) ;
+        $this->templates ($templates) ;
+        $result = call_user_func_array ($callback, $params) ;
+        $this->templates ($oldTemplates) ;
+        return $result ;
+    } 
 
     /**
      *
@@ -213,6 +184,26 @@ class BootstrapFormHelper extends FormHelper {
     **/
     protected function _matchButton ($html) {
         return strpos($html, '<button') !== FALSE || strpos($html, 'type="submit"') !== FALSE ;
+    }
+	
+    /**
+     *
+     * Set the default templates according to the inner properties of the form ($this->horizontal and $this->inline).
+     *
+    **/
+    protected function _setDefaultTemplates () {
+        $this->templates([
+            'formGroup' => '{{label}}'.($this->horizontal ? '<div class="'.$this->_getColClass('input').'">' : '').'{{prepend}}{{input}}{{append}}'.($this->horizontal ? '</div>' : ''),
+            'checkboxContainer' => ($this->horizontal ? '<div class="form-group"><div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '')
+                        .'<div class="checkbox">{{content}}</div>'
+                    .($this->horizontal ? '</div></div>' : ''),
+            'radioContainer' => ($this->horizontal ? '<div class="form-group"><div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '')
+                        .'{{content}}'
+                    .($this->horizontal ? '</div></div>' : ''),
+            'label' => '<label class="'.($this->horizontal ? $this->_getColClass('label') : '').' '.($this->inline ? 'sr-only' : 'control-label').' {{attrs.class}}" {{attrs}}>{{text}}</label>',
+            'error' => '<span class="help-block '.($this->horizontal ? $this->_getColClass('error') : '').'">{{content}}</span>',
+            'submitContainer' => '<div class="form-group">'.($this->horizontal ? '<div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '').'{{content}}'.($this->horizontal ? '</div>' : '').'</div>',
+        ]) ;
     }
 	
     /**
@@ -257,20 +248,20 @@ class BootstrapFormHelper extends FormHelper {
             $options = $this->addClass($options, 'form-search') ;
         }
         $options['role'] = 'form' ;
-        $this->templates([
-            'formGroup' => '{{label}}'.($this->horizontal ? '<div class="'.$this->_getColClass('input').'">' : '').'{{prepend}}{{input}}{{append}}'.($this->horizontal ? '</div>' : ''),
-            'checkboxContainer' => ($this->horizontal ? '<div class="form-group"><div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '')
-                        .'<div class="checkbox">{{content}}</div>'
-                    .($this->horizontal ? '</div></div>' : ''),
-            'radioContainer' => ($this->horizontal ? '<div class="form-group"><div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '')
-                        .'{{content}}'
-                    .($this->horizontal ? '</div></div>' : ''),
-            'label' => '<label class="'.($this->horizontal ? $this->_getColClass('label') : '').' '.($this->inline ? 'sr-only' : 'control-label').' {{attrs.class}}" {{attrs}}>{{text}}</label>',
-            'error' => '<span class="help-block '.($this->horizontal ? $this->_getColClass('error') : '').'">{{content}}</span>',
-            'submitContainer' => '<div class="form-group">'.($this->horizontal ? '<div class="'.$this->_getColClass('label', true).' '.$this->_getColClass('input').'">' : '').'{{content}}'.($this->horizontal ? '</div>' : '').'</div>',
-        ]) ;
+        $this->_setDefaultTemplates () ;
 		return parent::create($model, $options) ;
 	}
+
+    /**
+     *
+     * Switch horizontal mode on or off.
+     *
+    **/
+    public function setHorizontal ($horizontal) {
+        $this->horizontal = $horizontal ;
+        $this->_setDefaultTemplates () ;
+    }
+
 
     /**
      *
@@ -423,7 +414,8 @@ class BootstrapFormHelper extends FormHelper {
         $inputs = [] ;
         foreach ($fields as $field => $in) {
             if ($this->_extractOption($field, $options, $in)) {
-                $inputs[$field] = '<div class="col-md-{{colsize}}">{{'.($field == 'timeFormat' ? 'meridian' : $field).'}}</div>';
+                if ($field === 'timeFormat') $field = 'meridian' ; // Template uses "meridian" instead of timeFormat
+                $inputs[$field] = '<div class="col-md-{{colsize}}">{{'.$field.'}}</div>';
             }
         }
         $tplt = $this->templates('dateWidget');
@@ -513,10 +505,9 @@ class BootstrapFormHelper extends FormHelper {
      */
     public function dateTime($fieldName, array $options = []) {
         $fields = ['year' => true, 'month' => true, 'day' => true, 'hour' => true, 'minute' => true, 'second' => false, 'timeFormat' => false];
-        $this->templates([
+        return $this->_wrapTemplates ([
             'dateWidget' => $this->_getDatetimeTemplate($fields, $options)
-        ]);
-        return parent::dateTime($fieldName, $options);
+        ], 'parent::dateTime', [$fieldName, $options]);
     }
 
     /**
@@ -533,10 +524,9 @@ class BootstrapFormHelper extends FormHelper {
      */
     public function time($fieldName, array $options = []) {
         $fields = ['hour' => true, 'minute' => true, 'second' => false, 'timeFormat' => false];
-        $this->templates([
+        return $this->_wrapTemplates ([
             'dateWidget' => $this->_getDatetimeTemplate($fields, $options)
-        ]);
-        return parent::time($fieldName, $options);
+        ], 'parent::time', [$fieldName, $options]);
     }
 
     /**
@@ -553,10 +543,9 @@ class BootstrapFormHelper extends FormHelper {
      */
     public function date($fieldName, array $options = []) {
         $fields = ['year' => true, 'month' => true, 'day' => true];
-        $this->templates([
+        return $this->_wrapTemplates ([
             'dateWidget' => $this->_getDatetimeTemplate($fields, $options)
-        ]);
-        return parent::date($fieldName, $options);
+        ], 'parent::date', [$fieldName, $options]);
     }
 
     /**

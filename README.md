@@ -1,15 +1,46 @@
-CakePHP 3.x Helpers for Bootstrap 3
-===================================
+CakePHP 3.x Helpers for Bootstrap
+=================================
 
-CakePHP 3.0 Helpers to generate HTML with @Twitter Boostrap 3: `Html`, `Form`, `Modal` and `Paginator` helpers available!
+CakePHP 3.0 Helpers to generate HTML with @Twitter Boostrap style: `Html`, `Form`, `Modal` and `Paginator` helpers available!
 
-Full documentation available on github: https://holt59.github.io/cakephp3-bootstrap3-helpers/
+**Important:** From now, this repository will not target a specific bootstrap version, so you may encounter errors if you are requiring `cakephp3-bootstrap3-helpers` instead of `cakephp3-bootstrap-helpers` or loading `Bootstrap3` plugin instead of `Bootstrap`. Do not hesitate to open a new issue if you have trouble getting the plugin working.
 
-Do not hesitate to...
- - **Post a github issue** if you find a bug or want a new feature.
- - **Send me a message** if you have troubles installing or using the plugin.
+**Important:** The current version of bootstrap is v3.3.5, a new `bootstrap4-alpha` branch has been created with the aim of supporting Bootstrap 4. When the final version of Bootstrap 4 will be released, the `bootstrap4-alpha` branch will become the `master` branch of this plugin. See bellow if you want to always target a specific version of Bootstrap.
 
+How to... ?
+===========
 
+**Installation**
+
+If you want the latest version of the plugin (currently **Boostrap 3**):
+```
+composer require holt59/cakephp3-bootstrap-helpers:dev-master
+```
+
+If you want the latest **Bootstrap 3** version of the plugin:
+```
+composer require holt59/cakephp3-bootstrap-helpers:~3.0
+```
+
+If you want to test the **Bootstrap 4** version of the plugin (alpha):
+```
+composer require holt59/cakephp3-bootstrap-helpers:dev-v4.0.0-alpha
+```
+
+**Documentation**
+
+The full plugin documentation is available at https://holt59.github.io/cakephp3-bootstrap-helpers/.
+
+**Contributing**
+
+Do not hesitate to [**post a github issue**](https://github.com/Holt59/cakephp3-bootstrap-helpers/issues/new) or [**submit a pull request**](https://github.com/Holt59/cakephp3-bootstrap-helpers/pulls) if you find a bug or want a new feature.
+
+Who is using it?
+================
+
+Non-exhaustive list of projects using these helpers, if you want to be in this list, do not hesitate to [email me](mailto:capelle.mikael@gmail.com) or post a comment on [this issue](https://github.com/Holt59/cakephp3-bootstrap-helpers/issues/32).
+
+ - [**CakeAdmin**] (https://github.com/cakemanager/cakeadmin-lightstrap), LightStrap Theme for CakeAdmin
 
 Copyright and license
 =====================

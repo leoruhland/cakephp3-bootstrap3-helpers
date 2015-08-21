@@ -20,12 +20,13 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0
 */
 
-namespace Bootstrap3\View\Helper;
+namespace Bootstrap\View\Helper;
 
 use Cake\View\Helper\PaginatorHelper;
 
 class BootstrapPaginatorHelper extends PaginatorHelper {
 
+    use BootstrapTrait ;
 
     public function __construct ($view, $config = []) {
         $this->templates([
